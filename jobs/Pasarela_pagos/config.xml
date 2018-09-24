@@ -1,0 +1,99 @@
+<?xml version='1.1' encoding='UTF-8'?>
+<project>
+  <actions/>
+  <description></description>
+  <keepDependencies>false</keepDependencies>
+  <properties>
+    <com.coravy.hudson.plugins.github.GithubProjectProperty plugin="github@1.29.2">
+      <projectUrl>https://github.com/handresc1127/automatizacion_base/</projectUrl>
+      <displayName></displayName>
+    </com.coravy.hudson.plugins.github.GithubProjectProperty>
+  </properties>
+  <scm class="hudson.plugins.git.GitSCM" plugin="git@3.9.1">
+    <configVersion>2</configVersion>
+    <userRemoteConfigs>
+      <hudson.plugins.git.UserRemoteConfig>
+        <url>https://github.com/handresc1127/automatizacion_base.git</url>
+        <credentialsId>bbbd6462-7fb5-4bd0-bfdc-b065be583b25</credentialsId>
+      </hudson.plugins.git.UserRemoteConfig>
+    </userRemoteConfigs>
+    <branches>
+      <hudson.plugins.git.BranchSpec>
+        <name>*/Master_Integrado</name>
+      </hudson.plugins.git.BranchSpec>
+    </branches>
+    <doGenerateSubmoduleConfigurations>false</doGenerateSubmoduleConfigurations>
+    <submoduleCfg class="list"/>
+    <extensions/>
+  </scm>
+  <canRoam>true</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <triggers>
+    <hudson.triggers.TimerTrigger>
+      <spec>TZ=America/Bogota
+# Una vez de lunes a viernes entre las 12:00 y las 13:59  todos el año.
+H H(12-13) * * 1-5</spec>
+    </hudson.triggers.TimerTrigger>
+    <com.cloudbees.jenkins.GitHubPushTrigger plugin="github@1.29.2">
+      <spec></spec>
+    </com.cloudbees.jenkins.GitHubPushTrigger>
+  </triggers>
+  <concurrentBuild>false</concurrentBuild>
+  <builders>
+    <hudson.tasks.Maven>
+      <targets>clean
+install
+sonar:sonar</targets>
+      <mavenName>(Default)</mavenName>
+      <pom>automatizacion_base\</pom>
+      <usePrivateRepository>false</usePrivateRepository>
+      <settings class="jenkins.mvn.DefaultSettingsProvider"/>
+      <globalSettings class="jenkins.mvn.DefaultGlobalSettingsProvider"/>
+      <injectBuildVariables>false</injectBuildVariables>
+    </hudson.tasks.Maven>
+    <hudson.tasks.BatchFile>
+      <command>rmdir /S/Q C:\xampp\htdocs\Metis;&#xd;
+mkdir C:\xampp\htdocs\Metis;&#xd;
+xcopy /E/Q &quot;automatizacion_base\target\site\serenity&quot; C:\xampp\htdocs\Metis</command>
+    </hudson.tasks.BatchFile>
+    <hudson.tasks.BatchFile>
+      <command>echo y|pscp -r -i ..\..\Metis-WebReports.ppk &quot;automatizacion_base\target\site\serenity\*&quot; metis@190.248.48.5:/var/www/metis/atdd/</command>
+    </hudson.tasks.BatchFile>
+    <hudson.tasks.BatchFile>
+      <command>curl http://190.248.48.5/metis/command.php?rename</command>
+    </hudson.tasks.BatchFile>
+  </builders>
+  <publishers>
+    <jenkins.plugins.slack.SlackNotifier plugin="slack@2.3">
+      <baseUrl>https://metisgrupo.slack.com/services/hooks/jenkins-ci/</baseUrl>
+      <teamDomain></teamDomain>
+      <authToken>OKzRnYp2kaVzfPY8ySNtx0qD</authToken>
+      <authTokenCredentialId></authTokenCredentialId>
+      <botUser>false</botUser>
+      <room></room>
+      <startNotification>true</startNotification>
+      <notifySuccess>true</notifySuccess>
+      <notifyAborted>true</notifyAborted>
+      <notifyNotBuilt>true</notifyNotBuilt>
+      <notifyUnstable>true</notifyUnstable>
+      <notifyRegression>true</notifyRegression>
+      <notifyFailure>true</notifyFailure>
+      <notifyBackToNormal>true</notifyBackToNormal>
+      <notifyRepeatedFailure>true</notifyRepeatedFailure>
+      <includeTestSummary>true</includeTestSummary>
+      <includeFailedTests>true</includeFailedTests>
+      <commitInfoChoice>NONE</commitInfoChoice>
+      <includeCustomMessage>false</includeCustomMessage>
+      <customMessage></customMessage>
+    </jenkins.plugins.slack.SlackNotifier>
+    <hudson.tasks.junit.JUnitResultArchiver plugin="junit@1.25">
+      <testResults>automatizacion_base\target\reports\junit\allcukes.xml</testResults>
+      <keepLongStdio>false</keepLongStdio>
+      <healthScaleFactor>10.0</healthScaleFactor>
+      <allowEmptyResults>false</allowEmptyResults>
+    </hudson.tasks.junit.JUnitResultArchiver>
+  </publishers>
+  <buildWrappers/>
+</project>

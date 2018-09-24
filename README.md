@@ -1,1 +1,1 @@
-# checkoutConfiguration
+# Pasarela_pagos_JenkinsPipeline
