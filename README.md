@@ -1,1 +1,1 @@
-# Pasarela_pagos_JenkinsPipeline
+# Jenkins configuración
